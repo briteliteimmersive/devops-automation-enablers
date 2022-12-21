@@ -1,0 +1,30 @@
+name: Infrastructure deployment in Azure through Terraform
+
+on:
+  workflow_call:
+    inputs:
+      gh-env: 
+        required: true
+        type: string
+      gh-runner:
+        required: true
+        type: string
+        default: 'ubuntu-latest'
+      tf-version:
+        required: true
+        type: string
+      
+
+jobs:
+
+  tf-plan:
+    name: Terraform Plan
+    environment: ${{ inputs.gh-env }}
+    runs-on: ${{ inputs.gh-runner }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ inputs.tf-version }}
