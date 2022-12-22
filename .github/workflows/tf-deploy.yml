@@ -35,6 +35,7 @@ jobs:
         with:
           repository: ${{ inputs.tf-code-org }}/${{ inputs.tf-code-repo }}
           path: ${{ inputs.tf-code-repo }}
+          ref: main
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
