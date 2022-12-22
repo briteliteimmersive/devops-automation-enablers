@@ -13,6 +13,12 @@ on:
       tf-version:
         required: true
         type: string
+      tf-code-org:
+        type: string
+        default: 'briteliteimmersive'
+      tf-code-repo:
+        required: true
+        type: string
       
 
 jobs:
@@ -24,6 +30,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Checkout tools repo
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ inputs.tf-code-org }}/${{ inputs.tf-code-repo }}
+          path: ${{ inputs.tf-code-repo }}
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
