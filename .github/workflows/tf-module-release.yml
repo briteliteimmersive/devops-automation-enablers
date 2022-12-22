@@ -35,6 +35,6 @@ jobs:
         uses: fixpoint/azblob-upload-artifact@v4
         with:
           connection-string: ${{ secrets.TF_MODULE_STORAGE_ACCOUNT_CONNECTION_STRING }}
-          name: ${{ inputs.tf-module-name }}/${{ inputs.tf-module-version }}.zip
+          name: ${{ inputs.tf-module-name }}
           path: ${{ github.workspace }}/${{ inputs.tf-module-name }}-${{ inputs.tf-module-version }}.zip
           container: tf-modules
