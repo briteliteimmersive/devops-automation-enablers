@@ -4,11 +4,9 @@ on:
   workflow_call:
     inputs:
       gh-env:
-        required: true
         type: string
         default: 'tf-module-release'
       gh-runner:
-        required: true
         type: string
         default: 'ubuntu-latest'
       tf-module-name:
