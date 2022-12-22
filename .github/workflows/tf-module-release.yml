@@ -41,3 +41,11 @@ jobs:
           name: ${{ github.repository }}/${{ inputs.tf-module-name }}
           path: ${{ github.workspace }}/${{ inputs.tf-module-name }}/${{ env.json-var_module-version }}.zip
           container: tf-modules
+      - name: package-version-to-git-tag
+        uses: pkgdeps/git-tag-action@v2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_repo: ${{ github.repository }}
+          git_commit_sha: ${{ github.sha }}
+          version: ${{ env.json-var_module-version }}
+          git_tag_prefix: ${{ inputs.tf-module-name }}-v
