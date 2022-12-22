@@ -1,0 +1,38 @@
+name: Infrastructure module release
+
+on:
+  workflow_call:
+    inputs:
+      gh-runner:
+        required: true
+        type: string
+        default: 'ubuntu-latest'
+      tf-module-name:
+        required: true
+        type: string
+      tf-module-version:
+        required: true
+        type: string
+jobs:
+
+  tf-plan:
+    name: Terraform Plan
+    environment: 'tf-module'
+    runs-on: ${{ inputs.gh-runner }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Zip Release
+        uses: TheDoctor0/zip-release@0.6.2
+        with:
+          filename: ${{ inputs.tf-module-name }}-${{ inputs.tf-module-version }}.zip
+          path: ${{ github.workspace }}/${{ inputs.tf-module-name }}
+      - name: Upload a Build Artifact to Azure Blob Storage
+        # You may pin to the exact commit or the version.
+        # uses: fixpoint/azblob-upload-artifact@41eaaaa8fa50a5ba144d1d106c0e4ca11ca60c08
+        uses: fixpoint/azblob-upload-artifact@v4
+        with:
+          connection-string: ${{ secrets.TF_MODULE_STORAGE_ACCOUNT_CONNECTION_STRING }}
+          name: ${{ inputs.tf-module-name }}-${{ inputs.tf-module-version }}.zip
+          path: ${{ inputs.tf-module-name }}
+          container: tf-modules
