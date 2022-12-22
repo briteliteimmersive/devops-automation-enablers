@@ -32,12 +32,12 @@ jobs:
       - name: Generate Artifact
         uses: TheDoctor0/zip-release@0.6.2
         with:
-          filename: ${{ inputs.tf-module-name }}/${{ env.json-var-module-version }}.zip
+          filename: ${{ inputs.tf-module-name }}/${{ env.json-var_module-version }}.zip
           path: ${{ github.workspace }}/${{ inputs.tf-module-name }}
       - name: Upload Artifact
         uses: fixpoint/azblob-upload-artifact@v4
         with:
           connection-string: ${{ secrets.TF_MODULE_STORAGE_ACCOUNT_CONNECTION_STRING }}
           name: ${{ github.repository }}/${{ inputs.tf-module-name }}
-          path: ${{ github.workspace }}/${{ inputs.tf-module-name }}/${{ env.json-var-module-version }}.zip
+          path: ${{ github.workspace }}/${{ inputs.tf-module-name }}/${{ env.json-var_module-version }}.zip
           container: tf-modules
