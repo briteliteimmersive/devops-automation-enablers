@@ -93,8 +93,6 @@ jobs:
             -parallelism=${{ inputs.tf-parallelism }} \
             -out ${{ inputs.tf-plan-filename }} \
             -detailed-exitcode
-      - name: List
-        run: ls -ltr ${{ runner.temp }}/terraform_artifact/
       - name: Upload Plan
         uses: actions/upload-artifact@v3.1.1
         with:
@@ -115,8 +113,6 @@ jobs:
         with:
           name: terraform_artifact
           path: ${{ runner.temp }}/terraform_artifact
-      - name: List
-        run: ls -ltr ${{ runner.temp }}/terraform_artifact/
       - name: Set terraform version
         uses: antifree/json-to-variables@v1.0.1
         with:
@@ -143,7 +139,4 @@ jobs:
           export ARM_CLIENT_SECRET="${{ secrets.ARM_CLIENT_SECRET }}"
           export ARM_SUBSCRIPTION_ID="${{ secrets.ARM_SUBSCRIPTION_ID }}"
           export ARM_TENANT_ID="${{ secrets.ARM_TENANT_ID}}"
-          terraform -chdir=${{ runner.temp }}/terraform_artifact/ apply \ 
-            -auto-approve \
-            -parallelism=${{ inputs.tf-parallelism }} \
-            ${{ runner.temp }}/terraform_artifact/${{ inputs.tf-plan-filename }}
+          terraform -chdir=${{ runner.temp }}/terraform_artifact/ apply -auto-approve -parallelism=${{ inputs.tf-parallelism }} ${{ inputs.tf-plan-filename }}
