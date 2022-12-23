@@ -95,7 +95,7 @@ jobs:
             -out ${{ inputs.tf-plan-filename }} \
             -detailed-exitcode
           rm -rf ${{ runner.temp }}/terraform_artifact/.terraform
-      - name: Terraform Plan
+      - name: Terraform Destroy Plan
         if: github.event.inputs.tf-action == 'destroy'
         run: |
           export ARM_CLIENT_ID="${{ secrets.ARM_CLIENT_ID }}"
@@ -104,8 +104,6 @@ jobs:
           export ARM_TENANT_ID="${{ secrets.ARM_TENANT_ID}}"
           terraform -chdir=${{ runner.temp }}/terraform_artifact/ plan -destroy \
             -parallelism=${{ inputs.tf-parallelism }} \
-            -out ${{ inputs.tf-plan-filename }} \
-            -detailed-exitcode
           rm -rf ${{ runner.temp }}/terraform_artifact/.terraform
       - name: Upload Plan
         uses: actions/upload-artifact@v3.1.1
@@ -148,9 +146,18 @@ jobs:
             -backend-config=client_id=${{ secrets.ARM_CLIENT_ID }} \
             -backend-config=client_secret=${{ secrets.ARM_CLIENT_SECRET }}
       - name: Terraform Apply
+        if: github.event.inputs.tf-action == 'apply'
         run: |
           export ARM_CLIENT_ID="${{ secrets.ARM_CLIENT_ID }}"
           export ARM_CLIENT_SECRET="${{ secrets.ARM_CLIENT_SECRET }}"
           export ARM_SUBSCRIPTION_ID="${{ secrets.ARM_SUBSCRIPTION_ID }}"
           export ARM_TENANT_ID="${{ secrets.ARM_TENANT_ID}}"
           terraform -chdir=${{ runner.temp }}/terraform_artifact/ ${{ github.event.inputs.tf-action }} -auto-approve -parallelism=${{ inputs.tf-parallelism }} ${{ inputs.tf-plan-filename }}
+      - name: Terraform Destroy
+        if: github.event.inputs.tf-action == 'destroy'
+        run: |
+          export ARM_CLIENT_ID="${{ secrets.ARM_CLIENT_ID }}"
+          export ARM_CLIENT_SECRET="${{ secrets.ARM_CLIENT_SECRET }}"
+          export ARM_SUBSCRIPTION_ID="${{ secrets.ARM_SUBSCRIPTION_ID }}"
+          export ARM_TENANT_ID="${{ secrets.ARM_TENANT_ID}}"
+          terraform -chdir=${{ runner.temp }}/terraform_artifact/ ${{ github.event.inputs.tf-action }} -auto-approve -parallelism=${{ inputs.tf-parallelism }}
