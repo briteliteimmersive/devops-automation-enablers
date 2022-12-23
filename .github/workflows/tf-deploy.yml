@@ -62,7 +62,7 @@ jobs:
           }" >> ${{ runner.temp }}/terraform_artifact/backend.tf
       - name: Set Deployment Info
         run: |
-          echo "deployment_info = {'repo-name':'${{ github.repository }}'}" >> ${{ runner.temp }}/terraform_artifact/deployment-info.auto.tfvars
+          echo "deployment_info = {"repo-name":"${{ github.repository }}"}" >> ${{ runner.temp }}/terraform_artifact/deployment-info.auto.tfvars
       - name: Set terraform version
         uses: antifree/json-to-variables@v1.0.1
         with:
