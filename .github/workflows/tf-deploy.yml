@@ -106,11 +106,13 @@ jobs:
     runs-on: ${{ inputs.gh-runner }}
     needs: tf-plan
     steps:
+      - name: Create Artifact Directory
+        run: mkdir ${{ runner.temp }}/terraform_artifact
       - name: Download Plan
         uses: actions/download-artifact@v3.0.1
         with:
           name: terraform_artifact
-          path: ${{ runner.temp }}
+          path: ${{ runner.temp }}/terraform_artifact
       - name: Set terraform version
         uses: antifree/json-to-variables@v1.0.1
         with:
