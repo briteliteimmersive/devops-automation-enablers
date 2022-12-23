@@ -96,7 +96,8 @@ jobs:
       - name: Upload Plan
         uses: actions/upload-artifact@v3.1.1
         with:
-          path: ${{ runner.temp }}/terraform_artifact/
+          name: terraform_artifact
+          path: ${{ runner.temp }}/terraform_artifact/*
           retention-days: 30
 
   tf-apply:
@@ -108,7 +109,8 @@ jobs:
       - name: Download Plan
         uses: actions/download-artifact@v3.0.1
         with:
-          path: ${{ runner.temp }}/terraform_artifact/
+          name: terraform_artifact
+          path: ${{ runner.temp }}
       - name: Set terraform version
         uses: antifree/json-to-variables@v1.0.1
         with:
