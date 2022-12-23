@@ -142,4 +142,4 @@ jobs:
           terraform -chdir=${{ runner.temp }}/terraform_artifact/ apply \ 
             -auto-approve \
             -parallelism=${{ inputs.tf-parallelism }} \
-            ${{ inputs.tf-plan-filename }}
+            ${{ runner.temp }}/terraform_artifact/${{ inputs.tf-plan-filename }}
