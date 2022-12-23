@@ -42,7 +42,7 @@ jobs:
           connection-string: ${{ secrets.TF_MODULE_STORAGE_ACCOUNT_CONNECTION_STRING }}
           name: ${{ inputs.tf-module-name }}/${{ inputs.tf-module-version }}.zip
           container: ${{ inputs.tf-module-storage-container }}
-          path: ${{ runner.temp }}
+          path: ${{ runner.temp }}/${{ inputs.tf-module-version }}.zip
       - name: List artfiacts
         run: ls -ltr ${{ runner.temp }}
       - name: Create Artifact Directory
