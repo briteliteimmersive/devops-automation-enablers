@@ -103,7 +103,7 @@ jobs:
           export ARM_SUBSCRIPTION_ID="${{ secrets.ARM_SUBSCRIPTION_ID }}"
           export ARM_TENANT_ID="${{ secrets.ARM_TENANT_ID}}"
           terraform -chdir=${{ runner.temp }}/terraform_artifact/ plan -destroy \
-            -parallelism=${{ inputs.tf-parallelism }} \
+            -parallelism=${{ inputs.tf-parallelism }}
           rm -rf ${{ runner.temp }}/terraform_artifact/.terraform
       - name: Upload Plan
         uses: actions/upload-artifact@v3.1.1
