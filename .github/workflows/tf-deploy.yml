@@ -44,7 +44,7 @@ jobs:
           container: ${{ inputs.tf-module-storage-container }}
           path: ${{ inputs.tf-module-name }}/${{ inputs.tf-module-version }}.zip
       - name: List artifacts
-        run: ls -ltr ${{ github.workspace }}/${{ inputs.tf-module-name }}/
+        run: ls -ltr ${{ github.workspace }}
       - name: Unzip module
         run: unzip ${{ github.workspace }}/${{ inputs.tf-module-name }}/${{ inputs.tf-module-version }}.zip -d ${{ runner.temp }}/terraform_artifact/
       - name: List artifacts
