@@ -38,7 +38,7 @@ jobs:
         uses: fixpoint/azblob-upload-artifact@v4
         with:
           connection-string: ${{ secrets.TF_MODULE_STORAGE_ACCOUNT_CONNECTION_STRING }}
-          name: ${{ github.repository }}/${{ inputs.tf-module-name }}
+          name: ${{ inputs.tf-module-name }}
           path: ${{ github.workspace }}/${{ inputs.tf-module-name }}/${{ env.json-var_module-version }}.zip
           container: tf-modules
       - name: Create GitHub Tag
