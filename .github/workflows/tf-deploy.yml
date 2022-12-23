@@ -9,16 +9,16 @@ on:
       gh-runner:
         type: string
         default: 'ubuntu-latest'
-      tf-version:
+      tf-module-name:
+        required: true
         type: string
-        default: '1.3.0'
-      tfvars-directory:
+      tf-module-version:
         required: true
         type: string
       tf-module-storage-container:
         type: string
         default: 'tf-modules'
-      tf-module-name:
+      tfvars-directory:
         required: true
         type: string
       
