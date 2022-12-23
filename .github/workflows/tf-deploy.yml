@@ -7,36 +7,45 @@ on:
         required: true
         type: string
       gh-runner:
-        required: true
         type: string
         default: 'ubuntu-latest'
       tf-version:
+        type: string
+        default: '1.3.0'
+      tfvars-directory:
         required: true
         type: string
-      tf-code-org:
+      tf-module-storage-container:
         type: string
-        default: 'briteliteimmersive'
-      tf-code-repo:
+        default: 'tf-modules'
+      tf-module-name:
         required: true
         type: string
       
 
 jobs:
 
-  tf-plan:
-    name: Terraform Plan
+  tf-build:
+    name: Build Deployment Artifact
     environment: ${{ inputs.gh-env }}
     runs-on: ${{ inputs.gh-runner }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Checkout tools repo
-        uses: actions/checkout@v3
+      - name: Create Artifact Directory
+        run: mkdir ${{ runner.temp }}/terraform_artifact
+      - name: Download Module
+        uses: fixpoint/azblob-download-artifact@v3
         with:
-          repository: ${{ inputs.tf-code-org }}/${{ inputs.tf-code-repo }}
-          path: ${{ inputs.tf-code-repo }}
-          ref: main
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: ${{ inputs.tf-version }}
+          connection-string: ${{ secrets.TF_MODULE_STORAGE_ACCOUNT_CONNECTION_STRING }}
+          name: ${{ inputs.tf-module-name }}/${{ inputs.tf-module-version }}.zip
+          container: ${{ inputs.tf-module-storage-container }}
+          path: ${{ runner.temp }}
+      - name: Create Artifact Directory
+        run: unzip ${{ runner.temp }}/${{ inputs.tf-module-version }}.zip -d ${{ runner.temp }}/terraform_artifact/
+      - name: List artfiacts
+        rune: ls -ltr ${{ runner.temp }}/terraform_artifact/
+      # - name: Setup Terraform
+      #   uses: hashicorp/setup-terraform@v2
+      #   with:
+      #     terraform_version: ${{ inputs.tf-version }}

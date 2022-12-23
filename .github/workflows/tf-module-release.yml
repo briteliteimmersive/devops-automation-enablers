@@ -15,6 +15,9 @@ on:
       tf-module-version-file:
         type: string
         default: 'version.json'
+      tf-module-storage-container:
+        type: string
+        default: 'tf-modules'
 jobs:
 
   tf-module-release:
@@ -40,7 +43,7 @@ jobs:
           connection-string: ${{ secrets.TF_MODULE_STORAGE_ACCOUNT_CONNECTION_STRING }}
           name: ${{ inputs.tf-module-name }}
           path: ${{ github.workspace }}/${{ inputs.tf-module-name }}/${{ env.json-var_module-version }}.zip
-          container: tf-modules
+          container: ${{ inputs.tf-module-storage-container }}
       - name: Create GitHub Tag
         uses: pkgdeps/git-tag-action@v2
         with:
