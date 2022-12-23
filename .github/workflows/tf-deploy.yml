@@ -24,6 +24,12 @@ on:
       tf-module-version-file:
         type: string
         default: 'version.json'
+      tf-parallelism:
+        type: number
+        default: 50
+      tf-plan-filename:
+        type: string
+        default: 'terraform.tfplan'
       
 
 jobs:
@@ -66,7 +72,44 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ${{ env.json-var_tf-version }}
-      - name: Terraform 
+      - name: Terraform Init
+        run: |
+          terraform -chdir=${{ runner.temp }}/terraform_artifact/ init \
+            -backend-config=storage_account_name=${{ secrets.TF_BACKEND_STORAGE_ACC_NAME }} \
+            -backend-config=container_name=${{ secrets.TF_BACKEND_STORAGE_ACC_CONTAINER_NAME }} \
+            -backend-config=key=${{ github.repository }}/${{ inputs.tf-module-name }}/${{ inputs.tfvars-directory }}/terraform.tfstate \
+            -backend-config=resource_group_name=${{ secrets.TF_BACKEND_RESOURCE_GROUP_NAME }}  \
+            -backend-config=subscription_id=${{ secrets.TF_BACKEND_SUBSCRIPTION_ID }} \
+            -backend-config=tenant_id=${{ secrets.ARM_TENANT_ID}} \
+            -backend-config=client_id=${{ secrets.ARM_CLIENT_ID }} \
+            -backend-config=client_secret=${{ secrets.ARM_CLIENT_SECRET }}
+      - name: Terraform Plan
+        run: |
+          terraform -chdir=${{ runner.temp }}/terraform_artifact/ plan \
+            -parallelism=${{ inputs.tf-parallelism }} \
+            -out ${{ inputs.tf-plan-filename }} \
+            -detailed-exitcode
+      - name: Upload Plan
+        uses: actions/upload-artifact@v3.1.1
+        with:
+          path: ${{ runner.temp }}/terraform_artifact/
+          retention-days: 30
+
+  tf-apply:
+    name: Terraform Apply
+    environment: ${{ inputs.gh-env }}
+    runs-on: ${{ inputs.gh-runner }}
+    steps:
+      - name: Download Plan
+        uses: actions/download-artifact@v3.0.1
+        with:
+          path: ${{ runner.temp }}/terraform_artifact/
+      - name: Set terraform version
+        uses: antifree/json-to-variables@v1.0.1
+        with:
+          filename: ${{ runner.temp }}/terraform_artifact/${{ inputs.tf-module-version-file }}
+          prefix: json-var
+      - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ${{ env.json-var_tf-version }}
@@ -81,3 +124,9 @@ jobs:
             -backend-config=tenant_id=${{ secrets.ARM_TENANT_ID}} \
             -backend-config=client_id=${{ secrets.ARM_CLIENT_ID }} \
             -backend-config=client_secret=${{ secrets.ARM_CLIENT_SECRET }}
+      - name: Terraform Apply
+        run: |
+          terraform -chdir=${{ runner.temp }}/terraform_artifact/ apply \ 
+            -auto-approve \
+            -parallelism=${{ inputs.tf-parallelism }} \
+            ${{ inputs.tf-plan-filename }}
