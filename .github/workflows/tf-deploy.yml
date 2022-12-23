@@ -93,6 +93,7 @@ jobs:
             -parallelism=${{ inputs.tf-parallelism }} \
             -out ${{ inputs.tf-plan-filename }} \
             -detailed-exitcode
+          rm -rf ${{ runner.temp }}/terraform_artifact/.*
       - name: Upload Plan
         uses: actions/upload-artifact@v3.1.1
         with:
