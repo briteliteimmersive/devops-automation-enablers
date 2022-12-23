@@ -99,6 +99,7 @@ jobs:
     name: Terraform Apply
     environment: ${{ inputs.gh-env }}
     runs-on: ${{ inputs.gh-runner }}
+    needs: tf-plan
     steps:
       - name: Download Plan
         uses: actions/download-artifact@v3.0.1
