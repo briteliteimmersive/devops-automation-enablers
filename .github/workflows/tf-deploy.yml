@@ -21,12 +21,15 @@ on:
       tfvars-directory:
         required: true
         type: string
+      tf-module-version-file:
+        type: string
+        default: 'version.json'
       
 
 jobs:
 
-  tf-build:
-    name: Build Deployment Artifact
+  tf-plan:
+    name: Terraform Plan
     environment: ${{ inputs.gh-env }}
     runs-on: ${{ inputs.gh-runner }}
     steps:
@@ -46,7 +49,20 @@ jobs:
         run: unzip ${{ github.workspace }}/${{ inputs.tf-module-name }}/${{ inputs.tf-module-version }}.zip -d ${{ runner.temp }}/terraform_artifact/
       - name: List artifacts
         run: ls -ltr ${{ runner.temp }}/terraform_artifact/
-      # - name: Setup Terraform
-      #   uses: hashicorp/setup-terraform@v2
-      #   with:
-      #     terraform_version: ${{ inputs.tf-version }}
+      - name: Setup Backend
+        run: |
+          echo "terraform {
+            backend "azurerm" {}
+          }" >> ${{ runner.temp }}/terraform_artifact/backend.tf
+      - name: Set Deployment Info
+        run: |
+          echo "deployment_info = {'repo-name':'${{ github.repository }}'}" >> ${{ runner.temp }}/terraform_artifact/deployment-info.auto.tfvars
+      - name: Set terraform version
+        uses: antifree/json-to-variables@v1.0.1
+        with:
+          filename: ${{ runner.temp }}/terraform_artifact//${{ inputs.tf-module-version-file }}
+          prefix: json-var
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.json-var_tf-version }}
