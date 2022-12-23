@@ -60,7 +60,7 @@ jobs:
       - name: Set terraform version
         uses: antifree/json-to-variables@v1.0.1
         with:
-          filename: ${{ runner.temp }}/terraform_artifact//${{ inputs.tf-module-version-file }}
+          filename: ${{ runner.temp }}/terraform_artifact/${{ inputs.tf-module-version-file }}
           prefix: json-var
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -72,7 +72,8 @@ jobs:
           terraform_version: ${{ env.json-var_tf-version }}
       - name: Terraform Init
         run: |
-          terraform init -backend-config=storage_account_name=${{ secrets.TF_BACKEND_STORAGE_ACC_NAME }} \
+          terraform init -chdir=${{ runner.temp }}/terraform_artifact/ \
+            -backend-config=storage_account_name=${{ secrets.TF_BACKEND_STORAGE_ACC_NAME }} \
             -backend-config=container_name=${{ secrets.TF_BACKEND_STORAGE_ACC_CONTAINER_NAME }} \
             -backend-config=key=${{ github.repository }}/${{ inputs.tf-module-name }}/${{ inputs.tfvars-directory }}/terraform.tfstate \
             -backend-config=resource_group_name=${{ secrets.TF_BACKEND_RESOURCE_GROUP_NAME }}  \
