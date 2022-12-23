@@ -35,7 +35,7 @@ jobs:
       - name: Create Artifact Directory
         run: mkdir ${{ runner.temp }}/terraform_artifact
       - name: Copy Tfvars
-        run: cp ${{ github.repository }}/${{ inputs.tf-module-name }}/${{ inputs.tfvars-directory }}/* ${{ runner.temp }}/terraform_artifact
+        run: cp ${{ github.workspace }}/${{ inputs.tf-module-name }}/${{ inputs.tfvars-directory }}/* ${{ runner.temp }}/terraform_artifact
       - name: Download Module
         uses: fixpoint/azblob-download-artifact@v3
         with:
