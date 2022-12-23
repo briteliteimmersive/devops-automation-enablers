@@ -66,3 +66,17 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ${{ env.json-var_tf-version }}
+      - name: Terraform 
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ${{ env.json-var_tf-version }}
+      - name: Terraform Init
+        run: |
+          terraform init -backend-config=storage_account_name=${{ secrets.TF_BACKEND_STORAGE_ACC_NAME }} \
+            -backend-config=container_name=${{ secrets.TF_BACKEND_STORAGE_ACC_CONTAINER_NAME }} \
+            -backend-config=key=${{ github.repository }}/${{ inputs.tf-module-name }}/${{ inputs.tfvars-directory }}/terraform.tfstate \
+            -backend-config=resource_group_name=${{ secrets.TF_BACKEND_RESOURCE_GROUP_NAME }}  \
+            -backend-config=subscription_id=${{ secrets.TF_BACKEND_SUBSCRIPTION_ID }} \
+            -backend-config=tenant_id=${{ secrets.ARM_TENANT_ID}} \
+            -backend-config=client_id=${{ secrets.ARM_CLIENT_ID }} \
+            -backend-config=client_secret=${{ secrets.ARM_CLIENT_SECRET }}
