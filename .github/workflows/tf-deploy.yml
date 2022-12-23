@@ -93,6 +93,8 @@ jobs:
             -parallelism=${{ inputs.tf-parallelism }} \
             -out ${{ inputs.tf-plan-filename }} \
             -detailed-exitcode
+      - name: List
+        run: ls -ltr ${{ runner.temp }}/terraform_artifact/
       - name: Upload Plan
         uses: actions/upload-artifact@v3.1.1
         with:
@@ -113,6 +115,8 @@ jobs:
         with:
           name: terraform_artifact
           path: ${{ runner.temp }}/terraform_artifact
+      - name: List
+        run: ls -ltr ${{ runner.temp }}/terraform_artifact/
       - name: Set terraform version
         uses: antifree/json-to-variables@v1.0.1
         with:
