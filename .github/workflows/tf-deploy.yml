@@ -42,13 +42,10 @@ jobs:
           connection-string: ${{ secrets.TF_MODULE_STORAGE_ACCOUNT_CONNECTION_STRING }}
           name: ${{ inputs.tf-module-name }}
           container: ${{ inputs.tf-module-storage-container }}
-          # path: ${{ inputs.tf-module-name }}/${{ inputs.tf-module-version }}.zip
+      - name: Unzip module
+        run: unzip ${{ github.workspace }}/${{ inputs.tf-module-name }}/${{ inputs.tf-module-version }}.zip -d ${{ runner.temp }}/terraform_artifact/
       - name: List artifacts
-        run: ls -R
-      # - name: Unzip module
-      #   run: unzip ${{ github.workspace }}/${{ inputs.tf-module-name }}/${{ inputs.tf-module-version }}.zip -d ${{ runner.temp }}/terraform_artifact/
-      # - name: List artifacts
-      #   run: ls -ltr ${{ runner.temp }}/terraform_artifact/
+        run: ls -ltr ${{ runner.temp }}/terraform_artifact/
       # - name: Setup Terraform
       #   uses: hashicorp/setup-terraform@v2
       #   with:
