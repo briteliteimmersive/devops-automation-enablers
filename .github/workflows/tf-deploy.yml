@@ -6,9 +6,9 @@ on:
       gh-runner:
         type: string
         default: 'ubuntu-latest'
-      tf-plan-gh-env: 
+      tf-plan-gh-env:
+        required: true
         type: string
-        default: 'tf-plan'
       tf-apply-gh-env: 
         required: true
         type: string
