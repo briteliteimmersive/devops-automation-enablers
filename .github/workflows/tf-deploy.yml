@@ -12,18 +12,12 @@ on:
       tf-apply-gh-env: 
         required: true
         type: string
-      tf-module-name:
-        required: true
-        type: string
       tf-module-version:
         required: true
         type: string
       tf-module-storage-container:
         type: string
         default: 'tf-modules'
-      tfvars-directory:
-        required: true
-        type: string
       tf-module-version-file:
         type: string
         default: 'version.json'
@@ -41,21 +35,33 @@ jobs:
     name: Terraform Plan
     environment: ${{ inputs.tf-plan-gh-env }}
     runs-on: ${{ inputs.gh-runner }}
+    outputs:
+      tf-module-name: ${{ steps.set-module-info.outputs.tf-module-name }}
+      tfvars-directory: ${{ steps.set-module-info.outputs.tfvars-directory }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - id: set-module-info
+        run: |
+          ## Set TF module name
+          tf-module-name=$(echo ${{github.workflow}} | cut -d'/' -f1)
+          echo "::set-output name=tf-module-name::$tf-module-name"
+
+          ## Set TF vars directory
+          tfvars-directory=$(echo ${{github.workflow}} | cut -d'/' -f2-)
+          echo "::set-output name=tfvars-directory::$tfvars-directory"
       - name: Create Artifact Directory
         run: mkdir ${{ runner.temp }}/terraform_artifact
       - name: Copy Tfvars
-        run: cp ${{ github.workspace }}/${{ inputs.tf-module-name }}/${{ inputs.tfvars-directory }}/* ${{ runner.temp }}/terraform_artifact
+        run: cp ${{ github.workspace }}/${{ steps.set-module-info.outputs.tf-module-name }}/${{ steps.set-module-info.outputs.tfvars-directory }}/* ${{ runner.temp }}/terraform_artifact
       - name: Download Module
         uses: fixpoint/azblob-download-artifact@v3
         with:
           connection-string: ${{ secrets.TF_MODULE_STORAGE_ACCOUNT_CONNECTION_STRING }}
-          name: ${{ inputs.tf-module-name }}
+          name: ${{ steps.set-module-info.outputs.tf-module-name }}
           container: ${{ inputs.tf-module-storage-container }}
       - name: Unzip module
-        run: unzip ${{ github.workspace }}/${{ inputs.tf-module-name }}/${{ inputs.tf-module-version }}.zip -d ${{ runner.temp }}/terraform_artifact/
+        run: unzip ${{ github.workspace }}/${{ steps.set-module-info.outputs.tf-module-name }}/${{ inputs.tf-module-version }}.zip -d ${{ runner.temp }}/terraform_artifact/
       - name: List artifacts
         run: ls -ltr ${{ runner.temp }}/terraform_artifact/
       - name: Setup Backend
@@ -80,7 +86,7 @@ jobs:
           terraform -chdir=${{ runner.temp }}/terraform_artifact/ init \
             -backend-config=storage_account_name=${{ secrets.TF_BACKEND_STORAGE_ACC_NAME }} \
             -backend-config=container_name=${{ secrets.TF_BACKEND_STORAGE_ACC_CONTAINER_NAME }} \
-            -backend-config=key=${{ github.repository }}/${{ inputs.tf-module-name }}/${{ inputs.tfvars-directory }}/terraform.tfstate \
+            -backend-config=key=${{ github.repository }}/${{ steps.set-module-info.outputs.tf-module-name }}/${{ steps.set-module-info.outputs.tfvars-directory }}/terraform.tfstate \
             -backend-config=resource_group_name=${{ secrets.TF_BACKEND_RESOURCE_GROUP_NAME }}  \
             -backend-config=subscription_id=${{ secrets.TF_BACKEND_SUBSCRIPTION_ID }} \
             -backend-config=tenant_id=${{ secrets.ARM_TENANT_ID}} \
@@ -142,7 +148,7 @@ jobs:
           terraform -chdir=${{ runner.temp }}/terraform_artifact/ init \
             -backend-config=storage_account_name=${{ secrets.TF_BACKEND_STORAGE_ACC_NAME }} \
             -backend-config=container_name=${{ secrets.TF_BACKEND_STORAGE_ACC_CONTAINER_NAME }} \
-            -backend-config=key=${{ github.repository }}/${{ inputs.tf-module-name }}/${{ inputs.tfvars-directory }}/terraform.tfstate \
+            -backend-config=key=${{ github.repository }}/${{ needs.tf-plan.outputs.tf-module-name }}/${{ needs.tf-plan.outputs.tfvars-directory }}/terraform.tfstate \
             -backend-config=resource_group_name=${{ secrets.TF_BACKEND_RESOURCE_GROUP_NAME }}  \
             -backend-config=subscription_id=${{ secrets.TF_BACKEND_SUBSCRIPTION_ID }} \
             -backend-config=tenant_id=${{ secrets.ARM_TENANT_ID}} \
