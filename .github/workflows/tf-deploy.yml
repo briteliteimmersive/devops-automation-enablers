@@ -43,11 +43,9 @@ jobs:
         uses: actions/checkout@v3
       - id: set-module-info
         run: |
-          ## Set TF module name
           tf-module-name=$(echo ${{github.workflow}} | cut -d'/' -f1)
           echo "::set-output name=tf-module-name::$tf-module-name"
-
-          ## Set TF vars directory
+          
           tfvars-directory=$(echo ${{github.workflow}} | cut -d'/' -f2-)
           echo "::set-output name=tfvars-directory::$tfvars-directory"
       - name: Create Artifact Directory
