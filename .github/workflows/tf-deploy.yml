@@ -3,12 +3,15 @@ name: Infrastructure deployment in Azure through Terraform
 on:
   workflow_call:
     inputs:
-      gh-env: 
-        required: true
-        type: string
       gh-runner:
         type: string
         default: 'ubuntu-latest'
+      tf-plan-gh-env: 
+        type: string
+        default: 'tf-plan'
+      tf-apply-gh-env: 
+        required: true
+        type: string
       tf-module-name:
         required: true
         type: string
@@ -36,7 +39,7 @@ jobs:
 
   tf-plan:
     name: Terraform Plan
-    environment: ${{ inputs.gh-env }}
+    environment: ${{ inputs.tf-plan-gh-env }}
     runs-on: ${{ inputs.gh-runner }}
     steps:
       - name: Checkout
@@ -114,7 +117,7 @@ jobs:
 
   tf-apply:
     name: Terraform Apply
-    environment: ${{ inputs.gh-env }}
+    environment: ${{ inputs.tf-apply-gh-env }}
     runs-on: ${{ inputs.gh-runner }}
     needs: tf-plan
     steps:
