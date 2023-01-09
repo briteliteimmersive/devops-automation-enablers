@@ -100,7 +100,6 @@ jobs:
           export ARM_SUBSCRIPTION_ID="${{ secrets.ARM_SUBSCRIPTION_ID }}"
           export ARM_TENANT_ID="${{ secrets.ARM_TENANT_ID}}"
           terraform -chdir=${{ runner.temp }}/terraform_artifact/ plan \
-            -var gh_token=${{ secrets.TF_GITHUB_PROVIDER_TOKEN }} \
             -parallelism=${{ inputs.tf-parallelism }} \
             -out ${{ inputs.tf-plan-filename }} \
             -detailed-exitcode
@@ -113,7 +112,6 @@ jobs:
           export ARM_SUBSCRIPTION_ID="${{ secrets.ARM_SUBSCRIPTION_ID }}"
           export ARM_TENANT_ID="${{ secrets.ARM_TENANT_ID}}"
           terraform -chdir=${{ runner.temp }}/terraform_artifact/ plan -destroy \
-            -var gh_token=${{ secrets.TF_GITHUB_PROVIDER_TOKEN }} \
             -parallelism=${{ inputs.tf-parallelism }}
           rm -rf ${{ runner.temp }}/terraform_artifact/.terraform
       - name: Upload Plan
