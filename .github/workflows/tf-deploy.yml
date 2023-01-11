@@ -119,7 +119,6 @@ jobs:
                 -detailed-exitcode
             fi
           else
-          then
             if [ ${{ inputs.tf-gh-provider-required }} == 'false']
             then
             terraform -chdir=${{ runner.temp }}/terraform_artifact/ plan -destroy \
@@ -193,7 +192,6 @@ jobs:
           then
             terraform -chdir=${{ runner.temp }}/terraform_artifact/ apply -auto-approve -parallelism=${{ inputs.tf-parallelism }} ${{ inputs.tf-plan-filename }}
           else
-          then
             if [ ${{ inputs.tf-gh-provider-required }} == 'false']
             then
               terraform -chdir=${{ runner.temp }}/terraform_artifact/ destroy -auto-approve -parallelism=${{ inputs.tf-parallelism }} 
