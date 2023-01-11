@@ -2,6 +2,10 @@ name: Infrastructure deployment in Azure through Terraform
 
 on:
   workflow_call:
+    secrets:
+      TF_GITHUB_PROVIDER_TOKEN:
+        description: 'Need for spinning up resources on github repos'
+        required: false
     inputs:
       gh-runner:
         type: string
