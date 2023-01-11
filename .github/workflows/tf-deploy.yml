@@ -96,7 +96,6 @@ jobs:
             -backend-config=client_id=${{ secrets.ARM_CLIENT_ID }} \
             -backend-config=client_secret=${{ secrets.ARM_CLIENT_SECRET }}
       - name: Terraform Plan
-        if: github.event.inputs.tf-action != 'destroy'
         run: |
           export ARM_CLIENT_ID="${{ secrets.ARM_CLIENT_ID }}"
           export ARM_CLIENT_SECRET="${{ secrets.ARM_CLIENT_SECRET }}"
@@ -105,7 +104,7 @@ jobs:
 
           if [ ${{ github.event.inputs.tf-action }} != 'destroy' ]
           then
-            if [ ${{ inputs.tf-gh-provider-required }} == 'false']
+            if [ ${{ inputs.tf-gh-provider-required }} == 'false' ]
             then
               terraform -chdir=${{ runner.temp }}/terraform_artifact/ plan \
                 -parallelism=${{ inputs.tf-parallelism }} \
@@ -119,7 +118,7 @@ jobs:
                 -detailed-exitcode
             fi
           else
-            if [ ${{ inputs.tf-gh-provider-required }} == 'false']
+            if [ ${{ inputs.tf-gh-provider-required }} == 'false' ]
             then
             terraform -chdir=${{ runner.temp }}/terraform_artifact/ plan -destroy \
               -parallelism=${{ inputs.tf-parallelism }}
@@ -130,17 +129,6 @@ jobs:
             fi
           fi
           rm -rf ${{ runner.temp }}/terraform_artifact/.terraform
-      # - name: Terraform Destroy Plan
-      #   if: github.event.inputs.tf-action == 'destroy'
-      #   run: |
-      #     export ARM_CLIENT_ID="${{ secrets.ARM_CLIENT_ID }}"
-      #     export ARM_CLIENT_SECRET="${{ secrets.ARM_CLIENT_SECRET }}"
-      #     export ARM_SUBSCRIPTION_ID="${{ secrets.ARM_SUBSCRIPTION_ID }}"
-      #     export ARM_TENANT_ID="${{ secrets.ARM_TENANT_ID}}"
-      #     terraform -chdir=${{ runner.temp }}/terraform_artifact/ plan -destroy \
-      #       ${{ inputs.tf-cli-extra-args }} \
-      #       -parallelism=${{ inputs.tf-parallelism }}
-      #     rm -rf ${{ runner.temp }}/terraform_artifact/.terraform
       - name: Upload Plan
         uses: actions/upload-artifact@v3.1.1
         with:
@@ -182,7 +170,6 @@ jobs:
             -backend-config=client_id=${{ secrets.ARM_CLIENT_ID }} \
             -backend-config=client_secret=${{ secrets.ARM_CLIENT_SECRET }}
       - name: Terraform Apply
-        if: github.event.inputs.tf-action != 'destroy'
         run: |
           export ARM_CLIENT_ID="${{ secrets.ARM_CLIENT_ID }}"
           export ARM_CLIENT_SECRET="${{ secrets.ARM_CLIENT_SECRET }}"
@@ -192,18 +179,10 @@ jobs:
           then
             terraform -chdir=${{ runner.temp }}/terraform_artifact/ apply -auto-approve -parallelism=${{ inputs.tf-parallelism }} ${{ inputs.tf-plan-filename }}
           else
-            if [ ${{ inputs.tf-gh-provider-required }} == 'false']
+            if [ ${{ inputs.tf-gh-provider-required }} == 'false' ]
             then
               terraform -chdir=${{ runner.temp }}/terraform_artifact/ destroy -auto-approve -parallelism=${{ inputs.tf-parallelism }} 
             else
               terraform -chdir=${{ runner.temp }}/terraform_artifact/ destroy -auto-approve ${{ inputs.tf-cli-extra-args }} -var gh_token=${{ secrets.TF_GITHUB_PROVIDER_TOKEN }} -parallelism=${{ inputs.tf-parallelism }} 
             fi
           fi
-      # - name: Terraform Destroy
-      #   if: github.event.inputs.tf-action == 'destroy'
-      #   run: |
-      #     export ARM_CLIENT_ID="${{ secrets.ARM_CLIENT_ID }}"
-      #     export ARM_CLIENT_SECRET="${{ secrets.ARM_CLIENT_SECRET }}"
-      #     export ARM_SUBSCRIPTION_ID="${{ secrets.ARM_SUBSCRIPTION_ID }}"
-      #     export ARM_TENANT_ID="${{ secrets.ARM_TENANT_ID}}"
-      #     terraform -chdir=${{ runner.temp }}/terraform_artifact/ destroy -auto-approve ${{ inputs.tf-cli-extra-args }} -parallelism=${{ inputs.tf-parallelism }} 
