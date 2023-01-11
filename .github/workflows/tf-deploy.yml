@@ -27,6 +27,9 @@ on:
       tf-plan-filename:
         type: string
         default: 'terraform.tfplan'
+      tf-cli-extra-args:
+        type: string
+        default: ''
       
 
 jobs:
@@ -100,6 +103,7 @@ jobs:
           export ARM_SUBSCRIPTION_ID="${{ secrets.ARM_SUBSCRIPTION_ID }}"
           export ARM_TENANT_ID="${{ secrets.ARM_TENANT_ID}}"
           terraform -chdir=${{ runner.temp }}/terraform_artifact/ plan \
+            ${{ inputs.tf-cli-extra-args }} \
             -parallelism=${{ inputs.tf-parallelism }} \
             -out ${{ inputs.tf-plan-filename }} \
             -detailed-exitcode
@@ -112,6 +116,7 @@ jobs:
           export ARM_SUBSCRIPTION_ID="${{ secrets.ARM_SUBSCRIPTION_ID }}"
           export ARM_TENANT_ID="${{ secrets.ARM_TENANT_ID}}"
           terraform -chdir=${{ runner.temp }}/terraform_artifact/ plan -destroy \
+            ${{ inputs.tf-cli-extra-args }} \
             -parallelism=${{ inputs.tf-parallelism }}
           rm -rf ${{ runner.temp }}/terraform_artifact/.terraform
       - name: Upload Plan
@@ -169,4 +174,4 @@ jobs:
           export ARM_CLIENT_SECRET="${{ secrets.ARM_CLIENT_SECRET }}"
           export ARM_SUBSCRIPTION_ID="${{ secrets.ARM_SUBSCRIPTION_ID }}"
           export ARM_TENANT_ID="${{ secrets.ARM_TENANT_ID}}"
-          terraform -chdir=${{ runner.temp }}/terraform_artifact/ destroy -auto-approve -parallelism=${{ inputs.tf-parallelism }}
+          terraform -chdir=${{ runner.temp }}/terraform_artifact/ destroy -auto-approve ${{ inputs.tf-cli-extra-args }} -parallelism=${{ inputs.tf-parallelism }} 
