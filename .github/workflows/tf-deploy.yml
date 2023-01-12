@@ -41,6 +41,7 @@ jobs:
     outputs:
       tf-module-name: ${{ steps.set-module-info.outputs.tf-module-name }}
       tfvars-directory: ${{ steps.set-module-info.outputs.tfvars-directory }}
+      tf-plan-exit-code: ${{ steps.tf-plan.outputs.tf-plan-exit-code }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -96,6 +97,7 @@ jobs:
             -backend-config=client_id=${{ secrets.ARM_CLIENT_ID }} \
             -backend-config=client_secret=${{ secrets.ARM_CLIENT_SECRET }}
       - name: Terraform Plan
+        id: tf-plan
         run: |
           export ARM_CLIENT_ID="${{ secrets.ARM_CLIENT_ID }}"
           export ARM_CLIENT_SECRET="${{ secrets.ARM_CLIENT_SECRET }}"
@@ -110,22 +112,34 @@ jobs:
                 -parallelism=${{ inputs.tf-parallelism }} \
                 -out ${{ inputs.tf-plan-filename }} \
                 -detailed-exitcode
+                ## Set Plan Output
+                TF_PLAN_EXIT_CODE=$(echo $?)
+                echo "::set-output name=tf-plan-exit-code::$TF_PLAN_EXIT_CODE"
             else
               terraform -chdir=${{ runner.temp }}/terraform_artifact/ plan \
                 -var gh_token=${{ secrets.TF_GITHUB_PROVIDER_TOKEN }} \
                 -parallelism=${{ inputs.tf-parallelism }} \
                 -out ${{ inputs.tf-plan-filename }} \
                 -detailed-exitcode
+              ## Set Plan Output
+              TF_PLAN_EXIT_CODE=$(echo $?)
+              echo "::set-output name=tf-plan-exit-code::$TF_PLAN_EXIT_CODE"
             fi
           else
             if [ ${{ inputs.tf-gh-provider-required }} == 'false' ]
             then
-            terraform -chdir=${{ runner.temp }}/terraform_artifact/ plan -destroy \
-              -parallelism=${{ inputs.tf-parallelism }}
+              terraform -chdir=${{ runner.temp }}/terraform_artifact/ plan -destroy \
+                -parallelism=${{ inputs.tf-parallelism }}
+              ## Set Plan Output
+              TF_PLAN_EXIT_CODE=$(echo $?)
+              echo "::set-output name=tf-plan-exit-code::$TF_PLAN_EXIT_CODE"
             else
               terraform -chdir=${{ runner.temp }}/terraform_artifact/ plan -destroy \
                 -var gh_token=${{ secrets.TF_GITHUB_PROVIDER_TOKEN }} \
                 -parallelism=${{ inputs.tf-parallelism }}
+              ## Set Plan Output
+              TF_PLAN_EXIT_CODE=$(echo $?)
+              echo "::set-output name=tf-plan-exit-code::$TF_PLAN_EXIT_CODE"
             fi
           fi
           rm -rf ${{ runner.temp }}/terraform_artifact/.terraform
@@ -141,6 +155,7 @@ jobs:
     environment: ${{ inputs.tf-apply-gh-env }}
     runs-on: ${{ inputs.gh-runner }}
     needs: tf-plan
+    if: needs.tf-plan.outputs.tf-plan-exit-code != 0
     steps:
       - name: Create Artifact Directory
         run: mkdir ${{ runner.temp }}/terraform_artifact
