@@ -115,6 +115,7 @@ jobs:
                 ## Set Plan Output
                 TF_PLAN_EXIT_CODE=$(echo $?)
                 echo "::set-output name=tf-plan-exit-code::$TF_PLAN_EXIT_CODE"
+                echo $TF_PLAN_EXIT_CODE
             else
               terraform -chdir=${{ runner.temp }}/terraform_artifact/ plan \
                 -var gh_token=${{ secrets.TF_GITHUB_PROVIDER_TOKEN }} \
@@ -124,6 +125,7 @@ jobs:
               ## Set Plan Output
               TF_PLAN_EXIT_CODE=$(echo $?)
               echo "::set-output name=tf-plan-exit-code::$TF_PLAN_EXIT_CODE"
+              echo $TF_PLAN_EXIT_CODE
             fi
           else
             if [ ${{ inputs.tf-gh-provider-required }} == 'false' ]
@@ -133,6 +135,7 @@ jobs:
               ## Set Plan Output
               TF_PLAN_EXIT_CODE=$(echo $?)
               echo "::set-output name=tf-plan-exit-code::$TF_PLAN_EXIT_CODE"
+              echo $TF_PLAN_EXIT_CODE
             else
               terraform -chdir=${{ runner.temp }}/terraform_artifact/ plan -destroy \
                 -var gh_token=${{ secrets.TF_GITHUB_PROVIDER_TOKEN }} \
@@ -140,6 +143,7 @@ jobs:
               ## Set Plan Output
               TF_PLAN_EXIT_CODE=$(echo $?)
               echo "::set-output name=tf-plan-exit-code::$TF_PLAN_EXIT_CODE"
+              echo $TF_PLAN_EXIT_CODE
             fi
           fi
           rm -rf ${{ runner.temp }}/terraform_artifact/.terraform
