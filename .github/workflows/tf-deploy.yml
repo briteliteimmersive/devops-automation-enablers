@@ -112,6 +112,7 @@ jobs:
                 -parallelism=${{ inputs.tf-parallelism }} \
                 -out ${{ inputs.tf-plan-filename }} \
                 -detailed-exitcode
+                echo $?
                 ## Set Plan Output
                 TF_PLAN_EXIT_CODE=$(echo $?)
                 echo "::set-output name=tf-plan-exit-code::$TF_PLAN_EXIT_CODE"
@@ -123,6 +124,7 @@ jobs:
                 -out ${{ inputs.tf-plan-filename }} \
                 -detailed-exitcode
               ## Set Plan Output
+              echo $?
               TF_PLAN_EXIT_CODE=$(echo $?)
               echo "::set-output name=tf-plan-exit-code::$TF_PLAN_EXIT_CODE"
               echo $TF_PLAN_EXIT_CODE
@@ -132,6 +134,7 @@ jobs:
             then
               terraform -chdir=${{ runner.temp }}/terraform_artifact/ plan -destroy \
                 -parallelism=${{ inputs.tf-parallelism }}
+              echo $?
               ## Set Plan Output
               TF_PLAN_EXIT_CODE=$(echo $?)
               echo "::set-output name=tf-plan-exit-code::$TF_PLAN_EXIT_CODE"
@@ -140,6 +143,7 @@ jobs:
               terraform -chdir=${{ runner.temp }}/terraform_artifact/ plan -destroy \
                 -var gh_token=${{ secrets.TF_GITHUB_PROVIDER_TOKEN }} \
                 -parallelism=${{ inputs.tf-parallelism }}
+              echo $?
               ## Set Plan Output
               TF_PLAN_EXIT_CODE=$(echo $?)
               echo "::set-output name=tf-plan-exit-code::$TF_PLAN_EXIT_CODE"
