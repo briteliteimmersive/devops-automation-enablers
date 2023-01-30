@@ -50,13 +50,12 @@ jobs:
         uses: actions/checkout@v3
       - id: set-module-info
         run: |
-          
-          if [ '${{ inputs.tf-module-name }}' != '' ]
+          TF_MODULE_NAME=${{ inputs.tf-module-name }}
+          if [ -z '$TF_MODULE_NAME' ]
           then
+            TF_MODULE_NAME=$(echo ${{github.workflow}} | cut -d'/' -f1)
             echo "::set-output name=tf-module-name::${{ inputs.tf-module-name }}
           else
-            ## Set TF module name
-            TF_MODULE_NAME=$(echo ${{github.workflow}} | cut -d'/' -f1)
             echo "::set-output name=tf-module-name::$TF_MODULE_NAME"
           fi
 
