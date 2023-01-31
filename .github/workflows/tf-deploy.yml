@@ -54,7 +54,7 @@ jobs:
       - id: set-module-info
         run: |
           TF_MODULE_NAME=${{ inputs.tf-module-name }}
-          if [ -z "$TF_MODULE_NAME" ]
+          if [ -z $TF_MODULE_NAME ]
           then
             TF_MODULE_NAME=$(echo ${{github.workflow}} | cut -d'/' -f1)
             echo "::set-output name=tf-module-name::${{ inputs.tf-module-name }}
@@ -63,7 +63,7 @@ jobs:
           fi
 
           TFVARS_DIRECTORY=${{ inputs.tf-vars-directory }}
-          if [ -z "$TFVARS_DIRECTORY" ]
+          if [ -z $TFVARS_DIRECTORY ]
           then
             TFVARS_DIRECTORY=$(echo ${{github.workflow}} | cut -d'/' -f2-)
             echo "::set-output name=tfvars-directory::$TFVARS_DIRECTORY"
