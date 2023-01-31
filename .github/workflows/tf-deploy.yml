@@ -18,7 +18,7 @@ on:
       tf-module-version:
         required: true
         type: string
-      tfvars-directory:
+      tf-vars-directory:
         type: string
         default: ''
       tf-module-storage-container:
@@ -62,7 +62,7 @@ jobs:
             echo "::set-output name=tf-module-name::$TF_MODULE_NAME"
           fi
 
-          TFVARS_DIRECTORY=${{ inputs.tfvars-directory }}
+          TFVARS_DIRECTORY=${{ inputs.tf-vars-directory }}
           if [ -z '$TFVARS_DIRECTORY' ]
           then
             TFVARS_DIRECTORY=$(echo ${{github.workflow}} | cut -d'/' -f2-)
