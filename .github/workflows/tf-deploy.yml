@@ -54,20 +54,20 @@ jobs:
       - id: set-module-info
         run: |
           TF_MODULE_NAME=${{ inputs.tf-module-name }}
-          if [ -z $TF_MODULE_NAME ]
+          if [ '$TF_MODULE_NAME' != '' ]
           then
+            echo "::set-output name=tf-module-name::$TF_MODULE_NAME"
+          else
             TF_MODULE_NAME=$(echo ${{github.workflow}} | cut -d'/' -f1)
             echo "::set-output name=tf-module-name::${{ inputs.tf-module-name }}
-          else
-            echo "::set-output name=tf-module-name::$TF_MODULE_NAME"
           fi
 
           TFVARS_DIRECTORY=${{ inputs.tf-vars-directory }}
-          if [ -z $TFVARS_DIRECTORY ]
+          if [ '$TFVARS_DIRECTORY' != '' ]
           then
-            TFVARS_DIRECTORY=$(echo ${{github.workflow}} | cut -d'/' -f2-)
             echo "::set-output name=tfvars-directory::$TFVARS_DIRECTORY"
           else
+            TFVARS_DIRECTORY=$(echo ${{github.workflow}} | cut -d'/' -f2-)
             echo "::set-output name=tfvars-directory::$TFVARS_DIRECTORY"
           fi
       - name: Create Artifact Directory
